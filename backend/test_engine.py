@@ -5,7 +5,7 @@ from services.document_processor import DocumentProcessor
 from services.query_engine import QueryEngine
 
 # Setup Dependencies ---
-GEMINI_API_KEY = "AIzaSyAIom_ftRgc4UDla78mWeG8xBwSQvPEyvs"
+GEMINI_API_KEY = "GEMINI API KEY"
 
 db_file = "company_with_relations.db"
 sqlite_connection_string = f"sqlite:///{db_file}"
