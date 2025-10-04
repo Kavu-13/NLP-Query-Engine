@@ -10,7 +10,7 @@ from services.query_engine import QueryEngine
 
 # --- Configuration ---
 # You would normally load these from a config file or environment variables
-GEMINI_API_KEY = "AIzaSyAIom_ftRgc4UDla78mWeG8xBwSQvPEyvs"
+GEMINI_API_KEY = "AIzaSyAIom_ftRgc4UDla78mWeG8xBwSQvPEyvs" # Use Your GEMINI API KEY
 
 # Create a dummy db for startup. This will be replaced by the user's db.
 DB_FILE = "company_with_relations.db"
