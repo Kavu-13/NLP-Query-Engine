@@ -1,4 +1,4 @@
-# backend/services/query_engine.py
+
 import google.generativeai as genai
 import json
 from sqlalchemy import create_engine, text
@@ -37,7 +37,6 @@ class QueryEngine:
         return "SQL"
     
     def _generate_sql_query(self, user_query: str) -> str:
-        # ... (this method is unchanged)
         if not self.schema_service.schema:
              return "Error: Database schema has not been discovered yet."
         prompt = f"""
@@ -60,7 +59,6 @@ class QueryEngine:
             return f"Error generating SQL query: {e}"
 
     def _execute_sql_query(self, sql_query: str) -> dict:
-        # ... (this method is unchanged)
         banned_keywords = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'TRUNCATE']
         if any(keyword in sql_query.upper() for keyword in banned_keywords):
             return {"error": "Query contains potentially destructive commands."}
