@@ -1,4 +1,3 @@
-# backend/services/schema_discovery.py
 from sqlalchemy import create_engine, inspect
 
 class SchemaDiscovery:
