@@ -1,8 +1,8 @@
 import React from 'react';
-// The Grid import has been moved here to the top
+
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Grid } from '@mui/material';
 
-// Updated SqlResult component with better error handling
+// SqlResult component with error handling
 const SqlResult = ({ data, sql }) => {
   if (!Array.isArray(data) || data.length === 0) {
     return <Typography color="text.secondary">Query returned no database results.</Typography>;
@@ -27,7 +27,7 @@ const SqlResult = ({ data, sql }) => {
   );
 };
 
-// Updated DocResult component with better error handling
+// DocResult component with error handling
 const DocResult = ({ data }) => {
   if (!Array.isArray(data) || data.length === 0) {
     return <Typography color="text.secondary">Query returned no document results.</Typography>;
