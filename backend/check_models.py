@@ -1,8 +1,6 @@
-# backend/check_models.py
-
 import google.generativeai as genai
 
-GEMINI_API_KEY = "AIzaSyAIom_ftRgc4UDla78mWeG8xBwSQvPEyvs"
+GEMINI_API_KEY = "AIzaSyAIom_ftRgc4UDla78mWeG8xBwSQvPEyvs" # Use Your GEMINI API KEY
 
 try:
     genai.configure(api_key=GEMINI_API_KEY)
