@@ -89,7 +89,9 @@ class DocumentProcessor:
         
         results = []
         for i, idx in enumerate(indices[0]):
-            if idx != -1: # FAISS uses -1 for no result
+            # This 'if' statement is also indented
+            if idx != -1 and distances[0][i] < 1.0:
+                # This 'append' is indented even further
                 results.append({
                     "source": self.chunk_map[idx]['source'],
                     "content": self.chunk_map[idx]['content'],

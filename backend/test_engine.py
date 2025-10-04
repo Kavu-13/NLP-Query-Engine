@@ -1,5 +1,6 @@
 import os
 import json
+import sqlite3
 from services.schema_discovery import SchemaDiscovery
 from services.document_processor import DocumentProcessor
 from services.query_engine import QueryEngine
@@ -7,7 +8,48 @@ from services.query_engine import QueryEngine
 # Setup Dependencies ---
 GEMINI_API_KEY = "GEMINI API KEY"
 
+
 db_file = "company_with_relations.db"
+# Delete old DB file if it exists to ensure a clean test
+if os.path.exists(db_file):
+    os.remove(db_file)
+
+# --- Create and Populate the dummy SQLite database ---
+conn = sqlite3.connect(db_file)
+cursor = conn.cursor()
+
+# Create tables
+cursor.execute("""
+CREATE TABLE departments (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL
+);
+""")
+cursor.execute("""
+CREATE TABLE employees (
+    emp_id INTEGER PRIMARY KEY,
+    full_name TEXT NOT NULL,
+    salary REAL,
+    dept_id INTEGER,
+    FOREIGN KEY (dept_id) REFERENCES departments (id)
+);
+""")
+
+# Insert departments
+cursor.execute("INSERT INTO departments (id, name) VALUES (1, 'Engineering');")
+cursor.execute("INSERT INTO departments (id, name) VALUES (2, 'Human Resources');")
+cursor.execute("INSERT INTO departments (id, name) VALUES (3, 'Sales');")
+
+# Insert employees
+cursor.execute("INSERT INTO employees (emp_id, full_name, salary, dept_id) VALUES (101, 'Kavya Singh', 90000, 1);")
+cursor.execute("INSERT INTO employees (emp_id, full_name, salary, dept_id) VALUES (102, 'Abhishek Kr Rai', 85000, 1);")
+cursor.execute("INSERT INTO employees (emp_id, full_name, salary, dept_id) VALUES (103, 'Riya Kumari', 60000, 2);")
+cursor.execute("INSERT INTO employees (emp_id, full_name, salary, dept_id) VALUES (104, 'Suman Kumar', 120000, 3);")
+
+
+conn.commit()
+conn.close()
+
 sqlite_connection_string = f"sqlite:///{db_file}"
 
 schema_service = SchemaDiscovery()

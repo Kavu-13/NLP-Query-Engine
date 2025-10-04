@@ -1,44 +1,81 @@
 import React from 'react';
+// The Grid import has been moved here to the top
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Grid } from '@mui/material';
 
-const ResultsView = ({ results }) => {
-    if (!results) return null;
+// Updated SqlResult component with better error handling
+const SqlResult = ({ data, sql }) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    return <Typography color="text.secondary">Query returned no database results.</Typography>;
+  }
+  return (
+    <Box>
+      <Typography variant="h6" gutterBottom>Database Results</Typography>
+      <Typography variant="body2" sx={{ mb: 1, fontFamily: 'monospace' }}>
+        <strong>Generated SQL:</strong> {sql}
+      </Typography>
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>{Object.keys(data[0]).map(key => <TableCell key={key}><strong>{key}</strong></TableCell>)}</TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row, i) => <TableRow key={i}>{Object.values(row).map((val, j) => <TableCell key={j}>{String(val)}</TableCell>)}</TableRow>)}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+};
 
-    // Handle document search results
-    if (Array.isArray(results.answer) && results.answer.length > 0 && results.answer[0].source) {
-        return (
-            <div>
-                <h3>Document Results</h3>
-                {results.answer.map((item, index) => (
-                    <div key={index} style={{ border: '1px solid grey', padding: '10px', margin: '10px' }}>
-                        <p><strong>Source:</strong> {item.source}</p>
-                        <p>{item.content}</p>
-                    </div>
-                ))}
-            </div>
-        );
-    }
+// Updated DocResult component with better error handling
+const DocResult = ({ data }) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    return <Typography color="text.secondary">Query returned no document results.</Typography>;
+  }
+  return (
+    <Box>
+      <Typography variant="h6" gutterBottom>Document Results</Typography>
+      {data.map((item, index) => (
+        <Card key={index} sx={{ mb: 2 }}>
+          <CardContent>
+            <Typography variant="body2">{item.content}</Typography>
+          </CardContent>
+        </Card>
+      ))}
+    </Box>
+  );
+};
 
-    // Handle SQL results
-    if (Array.isArray(results.answer)) {
-        return (
-            <div>
-                <h3>Database Results</h3>
-                <p><strong>Generated SQL:</strong> <code>{results.generated_sql}</code></p>
-                {results.answer.length > 0 ? (
-                    <table border="1" cellPadding="5">
-                        <thead>
-                            <tr>{Object.keys(results.answer[0]).map(key => <th key={key}>{key}</th>)}</tr>
-                        </thead>
-                        <tbody>
-                            {results.answer.map((row, i) => <tr key={i}>{Object.values(row).map((val, j) => <td key={j}>{String(val)}</td>)}</tr>)}
-                        </tbody>
-                    </table>
-                ) : <p>Query returned no results.</p>}
-            </div>
-        );
-    }
 
-    return <div><pre>{JSON.stringify(results, null, 2)}</pre></div>;
+const ResultsView = ({ results, responseTime }) => {
+  if (!results) return <Typography color="text.secondary">Results will be displayed here.</Typography>;
+  if (results.error) return <Typography color="error">{results.error}</Typography>;
+
+  const { answer, type, generated_sql, cached } = results;
+
+  return (
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
+        {cached ? 'Cache Hit' : 'Cache Miss'}
+      </Typography>
+      {responseTime > 0 && <Typography variant="caption" color="text.secondary">Query took {responseTime} ms</Typography>}
+
+      {type === 'DOCUMENT' && <DocResult data={answer} />}
+
+      {type === 'SQL' && <SqlResult data={answer} sql={generated_sql} />}
+
+      {type === 'HYBRID' && (
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <SqlResult data={answer.sql_results} sql={generated_sql} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <DocResult data={answer.doc_results} />
+          </Grid>
+        </Grid>
+      )}
+    </Box>
+  );
 };
 
 export default ResultsView;

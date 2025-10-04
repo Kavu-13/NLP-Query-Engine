@@ -1,42 +1,60 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Box, Button, Typography, CircularProgress } from '@mui/material';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 const DocumentUploader = () => {
     const [files, setFiles] = useState([]);
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useState({ message: '', error: false });
+    const [loading, setLoading] = useState(false);
 
     const handleFileChange = (e) => {
         setFiles(e.target.files);
+        setStatus({ message: `${e.target.files.length} file(s) selected`, error: false });
     };
 
     const handleUpload = async () => {
         if (files.length === 0) {
-            setStatus('Please select files to upload.');
+            setStatus({ message: 'Please select files to upload.', error: true });
             return;
         }
-        setStatus('Uploading...');
+        setLoading(true);
+        setStatus({ message: 'Uploading...', error: false });
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append('files', files[i]);
         }
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/upload-documents', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            setStatus(`Successfully indexed: ${response.data.indexed_files.join(', ')}`);
+            const response = await axios.post('http://127.0.0.1:8000/api/upload-documents', formData);
+            setStatus({ message: `Success: Indexed ${response.data.indexed_files.join(', ')}`, error: false });
         } catch (error) {
-            setStatus('Upload failed: ' + error.message);
+            setStatus({ message: 'Upload failed. Please try again.', error: true });
         }
+        setLoading(false);
     };
 
     return (
-        <div>
-            <h2>2. Upload Documents</h2>
-            <input type="file" multiple onChange={handleFileChange} />
-            <button onClick={handleUpload}>Upload & Index</button>
-            <p>Status: {status}</p>
-        </div>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button
+                variant="outlined"
+                component="label"
+                endIcon={<UploadFileIcon />}
+                disabled={loading}
+            >
+                Choose Files
+                <input type="file" multiple hidden onChange={handleFileChange} />
+            </Button>
+            <Button
+                variant="contained"
+                onClick={handleUpload}
+                disabled={loading || files.length === 0}
+                endIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+                Upload & Index
+            </Button>
+            <Typography color={status.error ? 'error' : 'text.secondary'}>{status.message}</Typography>
+        </Box>
     );
 };
 
