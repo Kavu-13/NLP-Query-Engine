@@ -5,8 +5,7 @@ from services.schema_discovery import SchemaDiscovery
 from services.document_processor import DocumentProcessor
 from services.query_engine import QueryEngine
 
-# Setup Dependencies ---
-GEMINI_API_KEY = "GEMINI API KEY"
+GEMINI_API_KEY = "Your GEMINI API KEY"
 
 
 db_file = "company_with_relations.db"
